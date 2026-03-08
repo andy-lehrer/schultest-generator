@@ -1,0 +1,1052 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Schultest-Generator</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Source+Sans+3:wght@300;400;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink: #1a1a2e;
+  --paper: #f5f0e8;
+  --cream: #ede8dc;
+  --gold: #c9922a;
+  --blue: #2c5f8a;
+  --green: #1e7a4e;
+  --red: #b83232;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Source Sans 3', sans-serif;
+  background: var(--paper);
+  color: var(--ink);
+  min-height: 100vh;
+  background-image:
+    repeating-linear-gradient(0deg, transparent, transparent 27px, rgba(44,95,138,0.05) 27px, rgba(44,95,138,0.05) 28px);
+}
+
+header {
+  background: var(--ink);
+  color: var(--paper);
+  padding: 22px 36px;
+  border-bottom: 4px solid var(--gold);
+  display: flex; align-items: center; gap: 16px;
+}
+.logo { font-family: 'Playfair Display', serif; font-size: 1.8rem; font-weight: 900; }
+.logo em { color: var(--gold); font-style: normal; }
+.tagline { font-size: 0.78rem; letter-spacing: 2px; text-transform: uppercase; opacity: 0.55; margin-top: 3px; }
+
+/* TAB NAV */
+.tabs {
+  background: white;
+  border-bottom: 2px solid var(--cream);
+  display: flex;
+  padding: 0 36px;
+  gap: 0;
+}
+.tab {
+  padding: 14px 22px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  cursor: pointer;
+  border-bottom: 3px solid transparent;
+  margin-bottom: -2px;
+  color: #888;
+  transition: all 0.2s;
+  display: flex; align-items: center; gap: 8px;
+}
+.tab:hover { color: var(--ink); }
+.tab.active { color: var(--blue); border-bottom-color: var(--blue); }
+.tab .dot {
+  width: 20px; height: 20px;
+  border-radius: 50%;
+  background: var(--cream);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.7rem; font-weight: 700;
+  color: #888;
+}
+.tab.active .dot { background: var(--blue); color: white; }
+
+.panel { display: none; max-width: 1000px; margin: 0 auto; padding: 32px 24px; }
+.panel.active { display: block; }
+
+/* CARDS */
+.card {
+  background: white;
+  border: 1px solid rgba(26,26,46,0.1);
+  border-radius: 4px;
+  padding: 24px 28px;
+  box-shadow: 2px 2px 0 rgba(26,26,46,0.06);
+  margin-bottom: 20px;
+}
+.card-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 1rem;
+  font-weight: 700;
+  margin-bottom: 18px;
+  padding-bottom: 12px;
+  border-bottom: 2px solid var(--cream);
+  display: flex; align-items: center; gap: 10px;
+}
+.icon-box {
+  width: 26px; height: 26px;
+  background: var(--ink);
+  color: var(--gold);
+  border-radius: 3px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.85rem;
+  flex-shrink: 0;
+}
+
+label {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--blue);
+  margin-bottom: 5px;
+  margin-top: 14px;
+}
+label:first-of-type { margin-top: 0; }
+
+input[type="text"], input[type="number"], select, textarea {
+  width: 100%;
+  border: 1.5px solid rgba(26,26,46,0.18);
+  border-radius: 3px;
+  padding: 9px 13px;
+  font-family: 'Source Sans 3', sans-serif;
+  font-size: 0.92rem;
+  background: var(--paper);
+  color: var(--ink);
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+input:focus, select:focus, textarea:focus {
+  border-color: var(--blue);
+  box-shadow: 0 0 0 3px rgba(44,95,138,0.1);
+  background: white;
+}
+textarea { resize: vertical; min-height: 80px; line-height: 1.5; }
+
+.row { display: flex; gap: 14px; }
+.row > div { flex: 1; }
+
+.chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px; }
+.chip {
+  padding: 6px 14px;
+  border: 1.5px solid rgba(26,26,46,0.18);
+  border-radius: 20px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  user-select: none;
+  transition: all 0.15s;
+  background: white;
+}
+.chip:hover { border-color: var(--blue); color: var(--blue); }
+.chip.on { background: var(--ink); color: var(--gold); border-color: var(--ink); }
+
+.btn {
+  padding: 13px 24px;
+  border: none;
+  border-radius: 3px;
+  font-family: 'Source Sans 3', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.18s;
+  display: inline-flex; align-items: center; gap: 8px;
+}
+.btn-primary {
+  background: var(--ink);
+  color: var(--gold);
+  width: 100%;
+  justify-content: center;
+  font-family: 'Playfair Display', serif;
+  font-size: 1.05rem;
+  font-weight: 700;
+}
+.btn-primary:hover { background: var(--blue); transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+.btn-primary:disabled { opacity: 0.45; cursor: not-allowed; transform: none; box-shadow: none; }
+.btn-copy { background: var(--green); color: white; font-size: 0.85rem; padding: 9px 18px; margin-top: 10px; }
+.btn-copy:hover { background: #155c39; }
+.btn-copy.copied { background: #888; }
+
+/* LOADING */
+.loading {
+  display: none;
+  align-items: center; justify-content: center;
+  gap: 12px;
+  padding: 28px;
+  color: var(--blue);
+  font-weight: 600;
+}
+.spinner {
+  width: 22px; height: 22px;
+  border: 3px solid rgba(44,95,138,0.2);
+  border-top-color: var(--blue);
+  border-radius: 50%;
+  animation: spin 0.75s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* FRAGEN PREVIEW */
+.q-list { display: flex; flex-direction: column; gap: 10px; margin-top: 4px; }
+.q-item {
+  border-left: 3px solid var(--cream);
+  padding: 12px 16px;
+  background: var(--paper);
+  border-radius: 0 3px 3px 0;
+  animation: fadeIn 0.3s ease both;
+  transition: border-color 0.2s;
+}
+.q-item:hover { border-left-color: var(--blue); }
+@keyframes fadeIn { from { opacity: 0; transform: translateX(-6px); } to { opacity: 1; } }
+.q-meta { display: flex; align-items: center; gap: 8px; margin-bottom: 5px; }
+.q-num { font-family: 'Playfair Display', serif; font-size: 0.75rem; font-weight: 700; color: var(--gold); text-transform: uppercase; letter-spacing: 1px; }
+.badge {
+  font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px;
+  padding: 2px 7px; border-radius: 10px;
+}
+.badge-mc { background: rgba(44,95,138,0.12); color: var(--blue); }
+.badge-tf { background: rgba(30,122,78,0.12); color: var(--green); }
+.badge-open { background: rgba(201,146,42,0.15); color: #7a5200; }
+.q-text { font-size: 0.92rem; font-weight: 600; margin-bottom: 6px; }
+.q-opts { list-style: none; display: flex; flex-direction: column; gap: 2px; }
+.q-opts li { font-size: 0.82rem; color: #666; display: flex; align-items: center; gap: 6px; }
+.q-opts li.correct { color: var(--green); font-weight: 600; }
+.q-opts li::before { content: '○'; color: #ccc; flex-shrink: 0; }
+.q-opts li.correct::before { content: '✓'; color: var(--green); }
+
+/* CODE BOX */
+.code-wrap { position: relative; }
+.code-box {
+  background: #0d1117;
+  color: #7ee787;
+  border-radius: 4px;
+  padding: 18px 20px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.75rem;
+  line-height: 1.75;
+  overflow: auto;
+  max-height: 400px;
+  white-space: pre;
+  tab-size: 2;
+}
+.code-box::-webkit-scrollbar { width: 5px; height: 5px; }
+.code-box::-webkit-scrollbar-track { background: rgba(255,255,255,0.04); }
+.code-box::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 3px; }
+
+/* ANLEITUNG */
+.anleitung {
+  background: rgba(201,146,42,0.07);
+  border: 1px solid rgba(201,146,42,0.25);
+  border-radius: 4px;
+  padding: 16px 20px;
+  margin-top: 14px;
+}
+.anleitung h4 { font-family: 'Playfair Display', serif; font-size: 0.9rem; font-weight: 700; margin-bottom: 10px; }
+.anleitung ol { padding-left: 18px; }
+.anleitung li { font-size: 0.83rem; color: #444; line-height: 1.65; margin-bottom: 3px; }
+.anleitung code {
+  background: rgba(26,26,46,0.08);
+  padding: 1px 5px; border-radius: 2px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.78rem;
+}
+
+.error-box {
+  background: rgba(184,50,50,0.07);
+  border: 1px solid rgba(184,50,50,0.25);
+  border-radius: 4px;
+  padding: 12px 16px;
+  color: var(--red);
+  font-size: 0.88rem;
+  display: none;
+  margin-top: 12px;
+}
+
+/* NOTENSCALA */
+.skala-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 8px;
+  margin-top: 6px;
+}
+.skala-item { display: flex; flex-direction: column; gap: 3px; }
+.skala-label {
+  display: flex; align-items: center; gap: 6px;
+}
+.note-badge {
+  width: 26px; height: 26px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 700; font-size: 0.85rem;
+  flex-shrink: 0;
+}
+.n1 { background: #d4edda; color: #155724; }
+.n2 { background: #d1ecf1; color: #0c5460; }
+.n3 { background: #fff3cd; color: #856404; }
+.n4 { background: #fde8d8; color: #8a3500; }
+.n5 { background: #f8d7da; color: #721c24; }
+
+.info-banner {
+  background: rgba(44,95,138,0.07);
+  border: 1px solid rgba(44,95,138,0.2);
+  border-radius: 4px;
+  padding: 12px 16px;
+  font-size: 0.85rem;
+  color: var(--blue);
+  margin-bottom: 16px;
+  display: none;
+  align-items: center; gap: 10px;
+}
+.info-banner.visible { display: flex; }
+
+@media (max-width: 640px) {
+  .row { flex-direction: column; }
+  .skala-grid { grid-template-columns: repeat(3, 1fr); }
+  .tabs { padding: 0 16px; overflow-x: auto; }
+  .panel { padding: 20px 16px; }
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <div class="logo">Schul<em>test</em> Generator</div>
+    <div class="tagline">KI-gestützte Testerstellung · Google Forms &amp; Sheets</div>
+  </div>
+</header>
+
+<div class="tabs">
+  <div class="tab active" onclick="showTab('einstellungen')">
+    <div class="dot">1</div> Einstellungen
+  </div>
+  <div class="tab" onclick="showTab('fragen')" id="tab-fragen">
+    <div class="dot">2</div> Fragen
+  </div>
+  <div class="tab" onclick="showTab('forms')" id="tab-forms">
+    <div class="dot">3</div> Google Forms Script
+  </div>
+  <div class="tab" onclick="showTab('sheets')" id="tab-sheets">
+    <div class="dot">4</div> Google Sheets Auswertung
+  </div>
+</div>
+
+<!-- ===== TAB 1: EINSTELLUNGEN ===== -->
+<div class="panel active" id="panel-einstellungen">
+  <div class="card">
+    <div class="card-title"><div class="icon-box">📚</div> Testinhalt</div>
+
+    <label>Fach / Thema</label>
+    <input type="text" id="thema" placeholder="z.B. Multiplikation bis 100, Der Erste Weltkrieg, Adjektive im Deutschen …" />
+
+    <label>Zusätzliche Hinweise (optional)</label>
+    <textarea id="hinweise" placeholder="z.B. Fokus auf schriftliche Multiplikation, Vokabular aus Kapitel 3, Niveau angepasst für SuS mit Lernschwäche …"></textarea>
+
+    <div class="row" style="margin-top:14px">
+      <div>
+        <label>Schulstufe / Klasse</label>
+        <select id="stufe">
+          <option>VS – 1. Klasse</option>
+          <option>VS – 2. Klasse</option>
+          <option>VS – 3. Klasse</option>
+          <option>VS – 4. Klasse</option>
+          <option>Allgemeine Sonderschule</option>
+          <option selected>NMS / AHS – 5. Schulstufe</option>
+          <option>NMS / AHS – 6. Schulstufe</option>
+          <option>NMS / AHS – 7. Schulstufe</option>
+          <option>NMS / AHS – 8. Schulstufe</option>
+          <option>AHS Oberstufe</option>
+          <option>Berufsschule</option>
+          <option>Erwachsenenbildung / VHS</option>
+        </select>
+      </div>
+      <div>
+        <label>Anzahl Fragen</label>
+        <input type="number" id="anzahl" value="10" min="3" max="30" />
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><div class="icon-box">✏️</div> Fragetypen</div>
+    <div class="chips" id="chips-typen">
+      <label class="chip on" onclick="toggleChip(this)">Multiple Choice</label>
+      <label class="chip on" onclick="toggleChip(this)">Wahr / Falsch</label>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><div class="icon-box">🎓</div> Beurteilungsskala (Mittelschule)</div>
+    <p style="font-size:0.83rem; color:#666; margin-bottom:14px;">Prozentueller Anteil an der Gesamtpunktzahl je Beurteilungsstufe:</p>
+    <div class="skala-grid" style="grid-template-columns: repeat(5,1fr);">
+      <div class="skala-item">
+        <div class="skala-label"><div class="note-badge n1">★</div> <span style="font-size:0.78rem;font-weight:600;">Sehr tolle Leistung</span></div>
+        <input type="number" id="n1" value="91" min="0" max="100" /> %
+      </div>
+      <div class="skala-item">
+        <div class="skala-label"><div class="note-badge n2">✓✓</div> <span style="font-size:0.78rem;font-weight:600;">Gute Leistung</span></div>
+        <input type="number" id="n2" value="76" min="0" max="100" /> %
+      </div>
+      <div class="skala-item">
+        <div class="skala-label"><div class="note-badge n3">✓</div> <span style="font-size:0.78rem;font-weight:600;">Mittlere Leistung</span></div>
+        <input type="number" id="n3" value="63" min="0" max="100" /> %
+      </div>
+      <div class="skala-item">
+        <div class="skala-label"><div class="note-badge n4">~</div> <span style="font-size:0.78rem;font-weight:600;">Knapp gereicht</span></div>
+        <input type="number" id="n4" value="51" min="0" max="100" /> %
+      </div>
+      <div class="skala-item">
+        <div class="skala-label"><div class="note-badge n5">✗</div> <span style="font-size:0.78rem;font-weight:600;">Nicht gereicht</span></div>
+        <span style="font-size:0.78rem; color:#888; padding-top:8px; display:block;">unter 51 %</span>
+      </div>
+    </div>
+    <div style="margin-top:14px; background:var(--paper); border-radius:4px; padding:12px 16px; font-size:0.8rem; color:#555; border:1px solid var(--cream);">
+      <strong>Beurteilungstexte:</strong><br>
+      <span style="color:var(--green)">■</span> 91–100 % → <em>„Das war eine sehr tolle Leistung"</em> &nbsp;|&nbsp;
+      <span style="color:#2c5f8a">■</span> 76–90 % → <em>„Eine gute Leistung"</em> &nbsp;|&nbsp;
+      <span style="color:#856404">■</span> 63–75 % → <em>„Das war eine mittlere Leistung"</em><br>
+      <span style="color:#8a3500">■</span> 51–62 % → <em>„Das hat knapp gereicht"</em> &nbsp;|&nbsp;
+      <span style="color:var(--red)">■</span> 0–50 % → <em>„Das hat nicht gereicht"</em>
+    </div>
+
+    <label style="margin-top:18px">Punkte pro Frage</label>
+    <input type="number" id="punkte" value="1" min="1" max="10" style="width:120px" />
+  </div>
+
+  <div class="error-box" id="error-box"></div>
+
+  <button class="btn btn-primary" id="btn-generate" onclick="generateTest()">
+    ✦ Test generieren
+  </button>
+
+  <div class="loading" id="loading">
+    <div class="spinner"></div>
+    KI generiert Fragen …
+  </div>
+</div>
+
+<!-- ===== TAB 2: FRAGEN ===== -->
+<div class="panel" id="panel-fragen">
+  <div class="info-banner" id="info-fragen">
+    ℹ️ Generiere zuerst einen Test unter „Einstellungen".
+  </div>
+  <div class="card" id="fragen-card" style="display:none">
+    <div class="card-title"><div class="icon-box">❓</div> Generierte Fragen</div>
+    <div class="q-list" id="q-list"></div>
+  </div>
+</div>
+
+<!-- ===== TAB 3: GOOGLE FORMS ===== -->
+<div class="panel" id="panel-forms">
+  <div class="info-banner" id="info-forms">
+    ℹ️ Generiere zuerst einen Test unter „Einstellungen".
+  </div>
+  <div id="forms-content" style="display:none">
+    <div class="card">
+      <div class="card-title"><div class="icon-box">📋</div> Google Apps Script – Formular erstellen</div>
+      <div class="code-wrap">
+        <div class="code-box" id="forms-script"></div>
+      </div>
+      <button class="btn btn-copy" onclick="copyCode('forms-script', this)">📋 Script kopieren</button>
+    </div>
+    <div class="anleitung">
+      <h4>🔧 So verwendest du das Script:</h4>
+      <ol>
+        <li>Öffne <a href="https://script.google.com" target="_blank">script.google.com</a> und erstelle ein neues Projekt.</li>
+        <li>Lösche den vorhandenen Code und füge das Script oben ein.</li>
+        <li>Klicke auf <code>▶ Ausführen</code> → Funktion: <code>erstelleTest</code></li>
+        <li>Erteile bei der Berechtigungsanfrage Zugriff auf Google Forms.</li>
+        <li>Das fertige Formular erscheint in deinem Google Drive.</li>
+        <li><strong>Wichtig:</strong> Notiere die angezeigte <code>FormID</code> – du brauchst sie für das Sheets-Script!</li>
+      </ol>
+    </div>
+  </div>
+</div>
+
+<!-- ===== TAB 4: SHEETS AUSWERTUNG ===== -->
+<div class="panel" id="panel-sheets">
+  <div class="info-banner" id="info-sheets">
+    ℹ️ Generiere zuerst einen Test unter „Einstellungen".
+  </div>
+  <div id="sheets-content" style="display:none">
+    <div class="card">
+      <div class="card-title"><div class="icon-box">📊</div> Google Apps Script – Sheets Auswertung</div>
+      <div class="code-wrap">
+        <div class="code-box" id="sheets-script"></div>
+      </div>
+      <button class="btn btn-copy" onclick="copyCode('sheets-script', this)">📋 Script kopieren</button>
+    </div>
+    <div class="anleitung">
+      <h4>📊 So richtest du die Auswertung ein:</h4>
+      <ol>
+        <li>Öffne das <strong>Google Sheet</strong>, das automatisch mit dem Formular verknüpft wurde (Formular → Antworten → In Tabelle öffnen).</li>
+        <li>Klicke auf <code>Erweiterungen → Apps Script</code>.</li>
+        <li>Füge das Auswertungs-Script ein und passe die <code>FORM_ID</code> an (aus Schritt 6 des Forms-Scripts).</li>
+        <li>Führe einmalig <code>auswertungEinrichten</code> aus – das erstellt das Auswertungsblatt und alle Formeln.</li>
+        <li>Optional: Führe <code>triggerEinrichten</code> aus – dann wird die Auswertung automatisch bei jeder neuen Antwort aktualisiert.</li>
+      </ol>
+      <p style="font-size:0.82rem; color:#555; margin-top:10px;">💡 Das Auswertungsblatt enthält: Punkte je Schüler:in, automatische Note (Ö-Skala), Klassendurchschnitt, Notenspiegel-Diagramm und farbliche Hervorhebung.</p>
+    </div>
+  </div>
+</div>
+
+<script>
+// ─── STATE ───────────────────────────────────────────────────────────
+let generatedQuestions = [];
+let testConfig = {};
+
+// ─── TABS ─────────────────────────────────────────────────────────────
+function showTab(id) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelector(`[onclick="showTab('${id}')"]`).classList.add('active');
+  document.getElementById('panel-' + id).classList.add('active');
+}
+
+function toggleChip(el) {
+  el.classList.toggle('on');
+}
+
+// ─── GENERATE ─────────────────────────────────────────────────────────
+async function generateTest() {
+  const thema = document.getElementById('thema').value.trim();
+  if (!thema) { showError('Bitte ein Fach / Thema eingeben.'); return; }
+
+  const activeChips = [...document.querySelectorAll('#chips-typen .chip.on')].map(c => c.textContent.trim());
+  if (!activeChips.length) { showError('Bitte mindestens einen Fragetyp auswählen.'); return; }
+
+  clearError();
+  const btn = document.getElementById('btn-generate');
+  btn.disabled = true;
+  document.getElementById('loading').style.display = 'flex';
+
+  testConfig = {
+    thema,
+    hinweise: document.getElementById('hinweise').value.trim(),
+    stufe: document.getElementById('stufe').value,
+    anzahl: parseInt(document.getElementById('anzahl').value) || 10,
+    typen: activeChips,
+    punkte: parseInt(document.getElementById('punkte').value) || 1,
+    noten: {
+      n1: parseInt(document.getElementById('n1').value),
+      n2: parseInt(document.getElementById('n2').value),
+      n3: parseInt(document.getElementById('n3').value),
+      n4: parseInt(document.getElementById('n4').value),
+    }
+  };
+
+  const prompt = buildPrompt(testConfig);
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1000,
+        messages: [{ role: 'user', content: prompt }]
+      })
+    });
+    const data = await res.json();
+    const text = data.content?.map(b => b.text || '').join('') || '';
+    const clean = text.replace(/```json|```/g, '').trim();
+    generatedQuestions = JSON.parse(clean);
+
+    renderQuestions();
+    renderFormsScript();
+    renderSheetsScript();
+
+    document.getElementById('loading').style.display = 'none';
+    btn.disabled = false;
+    showTab('fragen');
+  } catch(e) {
+    showError('Fehler beim Generieren: ' + e.message);
+    document.getElementById('loading').style.display = 'none';
+    btn.disabled = false;
+  }
+}
+
+function buildPrompt(cfg) {
+  return `Du bist ein erfahrener österreichischer Mittelschullehrer. Erstelle einen Schultest auf Deutsch.
+
+Thema: ${cfg.thema}
+Schulstufe: ${cfg.stufe}
+Anzahl Fragen: ${cfg.anzahl}
+Fragetypen: ${cfg.typen.join(', ')} (NUR diese Typen verwenden, KEINE offenen Fragen!)
+${cfg.hinweise ? 'Besondere Hinweise: ' + cfg.hinweise : ''}
+
+Antworte NUR mit einem JSON-Array, kein Text davor oder danach, keine Markdown-Backticks.
+Verwende AUSSCHLIESSLICH folgende Typen:
+[
+  {
+    "typ": "mc",
+    "frage": "Fragentext",
+    "optionen": ["Antwort A","Antwort B","Antwort C","Antwort D"],
+    "korrekt": 0
+  },
+  {
+    "typ": "tf",
+    "frage": "Eine Aussage die wahr oder falsch ist",
+    "korrekt": true
+  }
+]
+
+Typen-Legende: mc=Multiple Choice (korrekt=Index 0-3), tf=Wahr/Falsch.
+WICHTIG: Keine offenen Fragen (typ "open") generieren!
+Verteile MC und Wahr/Falsch sinnvoll (ca. 70% MC, 30% Wahr/Falsch).
+Passe Schwierigkeit und Sprache an die Mittelschule (5.–8. Schulstufe) an.
+Nur JSON zurückgeben!`;
+}
+
+// ─── RENDER QUESTIONS ─────────────────────────────────────────────────
+function renderQuestions() {
+  const list = document.getElementById('q-list');
+  list.innerHTML = '';
+  generatedQuestions.forEach((q, i) => {
+    const div = document.createElement('div');
+    div.className = 'q-item';
+    div.style.animationDelay = (i * 0.05) + 's';
+
+    let badge = '';
+    let body = '';
+
+    if (q.typ === 'mc') {
+      badge = '<span class="badge badge-mc">Multiple Choice</span>';
+      body = `<ul class="q-opts">${q.optionen.map((o,j) =>
+        `<li class="${j===q.korrekt?'correct':''}">${o}</li>`).join('')}</ul>`;
+    } else if (q.typ === 'tf') {
+      badge = '<span class="badge badge-tf">Wahr / Falsch</span>';
+      body = `<p style="font-size:0.82rem; color:var(--green); font-weight:600;">Korrekte Antwort: ${q.korrekt ? 'Wahr ✓' : 'Falsch ✗'}</p>`;
+    } else {
+      badge = '<span class="badge badge-open">Kurzantwort</span>';
+      body = `<p style="font-size:0.82rem; color:#666;"><em>Musterlösung:</em> ${q.musterloesung}</p>`;
+    }
+
+    div.innerHTML = `
+      <div class="q-meta">
+        <span class="q-num">Frage ${i+1}</span>
+        ${badge}
+      </div>
+      <div class="q-text">${q.frage}</div>
+      ${body}`;
+    list.appendChild(div);
+  });
+
+  document.getElementById('fragen-card').style.display = 'block';
+  document.getElementById('info-fragen').classList.remove('visible');
+}
+
+// ─── FORMS SCRIPT ─────────────────────────────────────────────────────
+function renderFormsScript() {
+  const cfg = testConfig;
+  const qs = generatedQuestions;
+  const gesamtpunkte = qs.length * cfg.punkte;
+
+  let fragenCode = qs.map((q, i) => {
+    if (q.typ === 'mc') {
+      const opts = q.optionen.map(o => `"${escJs(o)}"`).join(', ');
+      return `
+  // Frage ${i+1} – Multiple Choice
+  item = form.addMultipleChoiceItem();
+  item.setTitle("${escJs(q.frage)}");
+  item.setRequired(true);
+  item.setChoices([
+    ${q.optionen.map((o,j) => `item.createChoice("${escJs(o)}", ${j===q.korrekt})`).join(',\n    ')}
+  ]);
+  item.setPoints(${cfg.punkte});`;
+    } else if (q.typ === 'tf') {
+      return `
+  // Frage ${i+1} – Wahr/Falsch
+  item = form.addMultipleChoiceItem();
+  item.setTitle("${escJs(q.frage)}");
+  item.setRequired(true);
+  item.setChoices([
+    item.createChoice("Wahr", ${q.korrekt === true}),
+    item.createChoice("Falsch", ${q.korrekt === false})
+  ]);
+  item.setPoints(${cfg.punkte});`;
+    } else {
+      return `
+  // Frage ${i+1} – Kurzantwort (offen)
+  var textItem = form.addTextItem();
+  textItem.setTitle("${escJs(q.frage)}");
+  textItem.setRequired(true);`;
+    }
+  }).join('\n');
+
+  const script = `// ════════════════════════════════════════════════════
+// SCHULTEST GENERATOR – Google Forms Script
+// Thema: ${cfg.thema} | Klasse: ${cfg.stufe}
+// Gesamtpunkte: ${gesamtpunkte}
+// Identifikation: Google-E-Mail (automatisch) + Namensfeld
+// ════════════════════════════════════════════════════
+
+function erstelleTest() {
+  var form = FormApp.create("${escJs(cfg.thema)} – Test (${escJs(cfg.stufe)})");
+  
+  // Formular-Grundeinstellungen
+  form.setDescription("Schultest: ${escJs(cfg.thema)}\\nKlasse: ${escJs(cfg.stufe)}\\nGesamtpunkte: ${gesamtpunkte}");
+  form.setIsQuiz(true);
+  form.setCollectEmail(true);          // ← Google-Schulkonto wird automatisch erfasst
+  form.setRequireLogin(true);          // ← Nur mit angemeldetem Google-Konto ausfüllbar
+  form.setLimitOneResponsePerUser(true); // ← Jede/r kann nur einmal antworten
+  form.setShuffleQuestions(false);
+  
+  // Quiz-Einstellungen
+  var settings = form.getSettings();
+  settings.setQuizSettings(
+    FormApp.QuizSettings.newBuilder()
+      .setIsQuiz(true)
+      .setGradeImmediately(false)
+      .setDefaultPointValue(${cfg.punkte})
+      .build()
+  );
+
+  // ── Namensfeld als erste Frage ─────────────────────────────────────
+  var nameItem = form.addTextItem();
+  nameItem.setTitle("Vor- und Nachname");
+  nameItem.setHelpText("Bitte vollständigen Namen eingeben (z.B. Maria Muster)");
+  nameItem.setRequired(true);
+
+  // ── Klasse als zweite Frage ────────────────────────────────────────
+  var klasseItem = form.addTextItem();
+  klasseItem.setTitle("Klasse");
+  klasseItem.setHelpText("z.B. 5A, 6B …");
+  klasseItem.setRequired(true);
+
+  var item;
+${fragenCode}
+
+  // Ausgabe der Form-URL und ID
+  Logger.log("✅ Formular erstellt!");
+  Logger.log("🔗 Bearbeitungs-URL: " + form.getEditUrl());
+  Logger.log("📤 Freigabe-URL: " + form.getPublishedUrl());
+  Logger.log("🔑 Form-ID (für Sheets-Script): " + form.getId());
+  
+  Logger.log("\\n⚠️  WICHTIG: Stelle sicher, dass das Formular nur für deine Schuldomäne freigegeben ist!");
+  Logger.log("   Formular öffnen → Senden → Einstellungen → Auf Personen in [Schuldomäne] beschränken");
+  
+  SpreadsheetApp.getUi().alert(
+    "✅ Formular erstellt!\\n\\n" +
+    "🔑 Form-ID für Sheets-Script:\\n" + form.getId() + "\\n\\n" +
+    "⚠️ Bitte prüfe noch:\\n" +
+    "Formular → Senden → Einstellungen:\\n" +
+    "→ Auf Schuldomäne beschränken aktivieren"
+  );
+}`;
+
+  document.getElementById('forms-script').textContent = script;
+  document.getElementById('forms-content').style.display = 'block';
+  document.getElementById('info-forms').classList.remove('visible');
+}
+
+// ─── SHEETS SCRIPT ────────────────────────────────────────────────────
+function renderSheetsScript() {
+  const cfg = testConfig;
+  const qs = generatedQuestions;
+  const gesamtpunkte = qs.length * cfg.punkte;
+  const { noten } = cfg;
+
+  const fragenTitel = qs.map((q,i) => `"${escJs(q.frage.substring(0,40))}${q.frage.length>40?'…':''}"`).join(',\n    ');
+
+  const script = `// ════════════════════════════════════════════════════
+// SCHULTEST AUSWERTUNG – Google Sheets Script
+// Thema: ${cfg.thema} | Klasse: ${cfg.stufe}
+// 91–100% sehr tolle Leistung | 76–90% gute Leistung | 63–75% mittlere Leistung
+// 51–62% knapp gereicht | 0–50% nicht gereicht
+// ════════════════════════════════════════════════════
+
+var FORM_ID = "HIER_FORM_ID_EINTRAGEN";  // ← Form-ID aus dem Forms-Script einfügen!
+var GESAMTPUNKTE = ${gesamtpunkte};
+var NOTEN_SG = ${noten.n1}; // "Sehr tolle Leistung" ab %
+var NOTEN_G  = ${noten.n2}; // "Gute Leistung" ab %
+var NOTEN_B  = ${noten.n3}; // "Mittlere Leistung" ab %
+var NOTEN_GE = ${noten.n4}; // "Knapp gereicht" ab %
+
+// ── Einmalig ausführen: Richtet das Auswertungsblatt ein ──────────────
+function auswertungEinrichten() {
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  
+  // Antworten-Sheet (von Google Forms automatisch erstellt)
+  var antwortSheet = ss.getSheets()[0];
+  
+  // Auswertungs-Sheet erstellen oder abrufen
+  var auswSheet = ss.getSheetByName("📊 Auswertung");
+  if (!auswSheet) {
+    auswSheet = ss.insertSheet("📊 Auswertung");
+  }
+  auswSheet.clear();
+  
+  // ── Kopfzeile Auswertungsblatt ──────────────────────────────────────
+  var header = ["#", "Zeitstempel", "E-Mail (Schulkonto)", "Name", "Klasse", "Punkte", "Max. Punkte", "Prozent", "Stufe", "Beurteilung"];
+  auswSheet.getRange(1, 1, 1, header.length).setValues([header]);
+  auswSheet.getRange(1, 1, 1, header.length)
+    .setBackground("#1a1a2e")
+    .setFontColor("#d4a017")
+    .setFontWeight("bold")
+    .setFontSize(10);
+  
+  // ── Beurteilungsspiegel-Übersicht ───────────────────────────────────
+  var notenCol = 13; // Spalte M (nach den 10 Datenspalten + 2 Lücke)
+  auswSheet.getRange(1, notenCol).setValue("📊 Beurteilungsspiegel").setFontWeight("bold");
+  var notenDaten = [
+    ["Stufe", "Beurteilung", "Ab %", "Anzahl"],
+    ["5", "Sehr tolle Leistung",  NOTEN_SG + "%", '=COUNTIF(I2:I500,"5")'],
+    ["4", "Gute Leistung",        NOTEN_G  + "%", '=COUNTIF(I2:I500,"4")'],
+    ["3", "Mittlere Leistung",    NOTEN_B  + "%", '=COUNTIF(I2:I500,"3")'],
+    ["2", "Knapp gereicht",       NOTEN_GE + "%", '=COUNTIF(I2:I500,"2")'],
+    ["1", "Nicht gereicht",       "< " + NOTEN_GE + "%", '=COUNTIF(I2:I500,"1")'],
+    [],
+    ["⌀ Punkte",        "", "", "=IFERROR(AVERAGE(F2:F500),\"-\")"],
+    ["⌀ Prozent",       "", "", "=IFERROR(TEXT(AVERAGE(H2:H500),\"0.0\")&\"%\",\"-\")"],
+    ["⌀ Stufe",         "", "", "=IFERROR(TEXT(AVERAGE(I2:I500),\"0.0\"),\"-\")"],
+    ["Anzahl gesamt",   "", "", '=COUNTA(C2:C500)'],
+    ["Positiv (2–5)",   "", "", '=COUNTIF(I2:I500,">1")'],
+    ["Nicht gereicht",  "", "", '=COUNTIF(I2:I500,"1")'],
+  ];
+  auswSheet.getRange(2, notenCol, notenDaten.length, 4).setValues(notenDaten);
+  
+  // Farbmarkierung Beurteilungsspiegel
+  var noteFarben = [["#d4edda"],["#d1ecf1"],["#fff3cd"],["#fde8d8"],["#f8d7da"]];
+  for (var i = 0; i < 5; i++) {
+    auswSheet.getRange(3 + i, notenCol).setBackground(noteFarben[i][0]);
+  }
+  
+  // ── Formeln für Auswertungszeilen (Zeilen 2–200) ────────────────────
+  // Antwort-Sheet Spalten (von Google Forms automatisch):
+  // A=Zeitstempel, B=E-Mail, C=Name, D=Klasse, dann die Fragen, letzte Spalte=Punkte
+  var maxRow = 200;
+  var antwName = antwortSheet.getName();
+  for (var r = 2; r <= maxRow; r++) {
+    var row = r;
+    var src = "'" + antwName + "'";
+    
+    // Laufende Nummer
+    auswSheet.getRange(row, 1).setFormula(
+      "=IF(" + src + "!A" + row + "=\"\",\"\"," + (row-1) + ")"
+    );
+    // Zeitstempel (Spalte A im Antwort-Sheet)
+    auswSheet.getRange(row, 2).setFormula(
+      "=IFERROR(" + src + "!A" + row + ",\"\")"
+    );
+    // E-Mail Schulkonto (Spalte B im Antwort-Sheet)
+    auswSheet.getRange(row, 3).setFormula(
+      "=IFERROR(IF(" + src + "!A" + row + "=\"\",\"\"," + src + "!B" + row + "),\"\")"
+    );
+    // Name (Spalte C im Antwort-Sheet = erste Frage)
+    auswSheet.getRange(row, 4).setFormula(
+      "=IFERROR(IF(" + src + "!A" + row + "=\"\",\"\"," + src + "!C" + row + "),\"\")"
+    );
+    // Klasse (Spalte D im Antwort-Sheet = zweite Frage)
+    auswSheet.getRange(row, 5).setFormula(
+      "=IFERROR(IF(" + src + "!A" + row + "=\"\",\"\"," + src + "!D" + row + "),\"\")"
+    );
+    // Punkte (letzte Spalte des Antwort-Sheets = Score von Google Forms)
+    auswSheet.getRange(row, 6).setFormula(
+      "=IFERROR(IF(" + src + "!A" + row + "=\"\",\"\",VLOOKUP(" + src + "!A" + row + "," + src + "!A:Z,COLUMNS(" + src + "!A:Z),0)),\"\")"
+    );
+    // Gesamtpunkte
+    auswSheet.getRange(row, 7).setFormula(
+      "=IF(B" + row + "=\"\",\"\"," + GESAMTPUNKTE + ")"
+    );
+    // Prozent
+    auswSheet.getRange(row, 8).setFormula(
+      "=IFERROR(IF(B" + row + "=\"\",\"\",ROUND(F" + row + "/G" + row + "*100,1)),\"\")"
+    );
+    // Beurteilungsstufe (1–5, wobei 5 = beste)
+    auswSheet.getRange(row, 9).setFormula(
+      "=IFERROR(IF(B" + row + "=\"\",\"\"," +
+      "IF(H" + row + ">=" + NOTEN_SG + ",5," +
+      "IF(H" + row + ">=" + NOTEN_G  + ",4," +
+      "IF(H" + row + ">=" + NOTEN_B  + ",3," +
+      "IF(H" + row + ">=" + NOTEN_GE + ",2,1))))),\"\")"
+    );
+    // Beurteilungstext
+    auswSheet.getRange(row, 10).setFormula(
+      "=IFERROR(IF(I" + row + "=\"\",\"\"," +
+      "IF(I" + row + "=5,\"Das war eine sehr tolle Leistung!\"," +
+      "IF(I" + row + "=4,\"Eine gute Leistung!\"," +
+      "IF(I" + row + "=3,\"Das war eine mittlere Leistung.\"," +
+      "IF(I" + row + "=2,\"Das hat knapp gereicht.\",\"Das hat nicht gereicht.\"))))),\"\")"
+    );
+  }
+  
+  // ── Bedingte Formatierung für Beurteilungsstufe (Spalte I) ────────────
+  var noteRange = auswSheet.getRange("I2:I500");
+  var rules = auswSheet.getConditionalFormatRules();
+  
+  var noteFarbenMap = [
+    { val: 5, bg: "#d4edda", fg: "#155724" }, // sehr tolle Leistung
+    { val: 4, bg: "#d1ecf1", fg: "#0c5460" }, // gute Leistung
+    { val: 3, bg: "#fff3cd", fg: "#856404" }, // mittlere Leistung
+    { val: 2, bg: "#fde8d8", fg: "#7d3c0b" }, // knapp gereicht
+    { val: 1, bg: "#f8d7da", fg: "#721c24" }, // nicht gereicht
+  ];
+  
+  noteFarbenMap.forEach(function(nf) {
+    rules.push(
+      SpreadsheetApp.newConditionalFormatRule()
+        .whenNumberEqualTo(parseInt(nf.val))
+        .setBackground(nf.bg)
+        .setFontColor(nf.fg)
+        .setBold(true)
+        .setRanges([noteRange])
+        .build()
+    );
+  });
+  auswSheet.setConditionalFormatRules(rules);
+  
+  // ── Spaltenbreiten anpassen ─────────────────────────────────────────
+  auswSheet.setColumnWidth(1, 40);   // #
+  auswSheet.setColumnWidth(2, 150);  // Zeitstempel
+  auswSheet.setColumnWidth(3, 200);  // E-Mail
+  auswSheet.setColumnWidth(4, 150);  // Name
+  auswSheet.setColumnWidth(5, 70);   // Klasse
+  auswSheet.setColumnWidth(6, 75);   // Punkte
+  auswSheet.setColumnWidth(7, 90);   // Max. Punkte
+  auswSheet.setColumnWidth(8, 80);   // Prozent
+  auswSheet.setColumnWidth(9, 60);   // Stufe
+  auswSheet.setColumnWidth(10, 240); // Beurteilung
+  
+  // Zeile 1 einfrieren
+  auswSheet.setFrozenRows(1);
+  
+  Logger.log("✅ Auswertungsblatt wurde eingerichtet!");
+  SpreadsheetApp.getUi().alert("Auswertungsblatt wurde eingerichtet! Bitte prüfe ob die Punktespalte korrekt zugeordnet ist.");
+}
+
+// ── Punkte direkt aus Google Forms Quiz-Ergebnissen holen ─────────────
+function punkteAktualisieren() {
+  if (FORM_ID === "HIER_FORM_ID_EINTRAGEN") {
+    SpreadsheetApp.getUi().alert("Bitte zuerst die FORM_ID im Script eintragen!");
+    return;
+  }
+  
+  var form = FormApp.openById(FORM_ID);
+  var responses = form.getResponses();
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var auswSheet = ss.getSheetByName("📊 Auswertung");
+  
+  if (!auswSheet) {
+    auswSheet = ss.insertSheet("📊 Auswertung");
+    auswertungEinrichten();
+  }
+  
+  // Alle Antworten mit Punkten schreiben
+  var data = [["#", "Zeitstempel", "E-Mail (Schulkonto)", "Name", "Klasse", "Punkte", "Max. Punkte", "Prozent", "Stufe", "Beurteilung"]];
+  
+  responses.forEach(function(resp, idx) {
+    var score = resp.getScore();
+    var maxScore = GESAMTPUNKTE;
+    var pct = Math.round(score / maxScore * 100);
+    var stufe = pct >= NOTEN_SG ? 5 : pct >= NOTEN_G ? 4 : pct >= NOTEN_B ? 3 : pct >= NOTEN_GE ? 2 : 1;
+    var beurtTxt = [
+      "",
+      "Das hat nicht gereicht.",
+      "Das hat knapp gereicht.",
+      "Das war eine mittlere Leistung.",
+      "Eine gute Leistung!",
+      "Das war eine sehr tolle Leistung!"
+    ][stufe];
+    
+    // Name und Klasse aus den ersten beiden Fragen auslesen
+    var itemResponses = resp.getItemResponses();
+    var name   = itemResponses.length > 0 ? itemResponses[0].getResponse() : "";
+    var klasse = itemResponses.length > 1 ? itemResponses[1].getResponse() : "";
+    
+    data.push([
+      idx + 1,
+      resp.getTimestamp(),
+      resp.getRespondentEmail(),
+      name,
+      klasse,
+      score,
+      maxScore,
+      pct + "%",
+      stufe,
+      beurtTxt
+    ]);
+  });
+  
+  auswSheet.getRange(1, 1, data.length, 10).setValues(data);
+  
+  // Bedingte Formatierung erneut setzen
+  var noteRange = auswSheet.getRange("F2:F" + data.length);
+  // (Formatierung wie oben – hier zur Kürze weggelassen, wird durch auswertungEinrichten gesetzt)
+  
+  Logger.log("✅ " + (data.length-1) + " Antworten aktualisiert.");
+  SpreadsheetApp.getUi().alert("✅ " + (data.length-1) + " Antworten wurden aktualisiert!");
+}
+
+// ── Trigger: automatische Aktualisierung bei neuer Antwort ────────────
+function triggerEinrichten() {
+  // Bestehende Trigger löschen
+  ScriptApp.getProjectTriggers().forEach(function(t) {
+    if (t.getHandlerFunction() === "punkteAktualisieren") {
+      ScriptApp.deleteTrigger(t);
+    }
+  });
+  // Neuen Trigger erstellen
+  ScriptApp.newTrigger("punkteAktualisieren")
+    .forSpreadsheet(SpreadsheetApp.getActiveSpreadsheet())
+    .onFormSubmit()
+    .create();
+  Logger.log("✅ Trigger eingerichtet – Auswertung wird bei jeder neuen Antwort aktualisiert.");
+  SpreadsheetApp.getUi().alert("✅ Automatischer Trigger eingerichtet!");
+}
+
+// ── Menü in Google Sheets hinzufügen ─────────────────────────────────
+function onOpen() {
+  SpreadsheetApp.getUi()
+    .createMenu("📊 Testauswertung")
+    .addItem("Auswertungsblatt einrichten", "auswertungEinrichten")
+    .addSeparator()
+    .addItem("Punkte jetzt aktualisieren", "punkteAktualisieren")
+    .addItem("Auto-Trigger einrichten", "triggerEinrichten")
+    .addToUi();
+}`;
+
+  document.getElementById('sheets-script').textContent = script;
+  document.getElementById('sheets-content').style.display = 'block';
+  document.getElementById('info-sheets').classList.remove('visible');
+}
+
+// ─── HELPERS ──────────────────────────────────────────────────────────
+function escJs(s) {
+  return (s || '').replace(/\\/g,'\\\\').replace(/"/g,'\\"').replace(/\n/g,'\\n');
+}
+
+function showError(msg) {
+  const box = document.getElementById('error-box');
+  box.textContent = '⚠ ' + msg;
+  box.style.display = 'block';
+}
+function clearError() {
+  document.getElementById('error-box').style.display = 'none';
+}
+
+function copyCode(id, btn) {
+  const text = document.getElementById(id).textContent;
+  navigator.clipboard.writeText(text).then(() => {
+    const orig = btn.textContent;
+    btn.textContent = '✅ Kopiert!';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = orig; btn.classList.remove('copied'); }, 2000);
+  });
+}
+
+// Infobanner initial anzeigen
+document.getElementById('info-fragen').classList.add('visible');
+document.getElementById('info-forms').classList.add('visible');
+document.getElementById('info-sheets').classList.add('visible');
+</script>
+</body>
+</html>
